@@ -2,152 +2,202 @@
 
 #include <gtest.h>
 
-TEST(TVector, can_create_vector_with_positive_length)
+TEST(TMatrix, can_create_matrix_with_positive_length)
 {
-  ASSERT_NO_THROW(TVector<int> v(5));
+	ASSERT_NO_THROW(TMatrix<int> m(5));
 }
 
-TEST(TVector, cant_create_too_large_vector)
+TEST(TMatrix, cant_create_too_large_matrix)
 {
-  ASSERT_ANY_THROW(TVector<int> v(MAX_VECTOR_SIZE + 1));
+	ASSERT_ANY_THROW(TMatrix<int> m(MAX_MATRIX_SIZE + 1));
 }
 
-TEST(TVector, throws_when_create_vector_with_negative_length)
+TEST(TMatrix, throws_when_create_matrix_with_negative_length)
 {
-  ASSERT_ANY_THROW(TVector<int> v(-5));
+	ASSERT_ANY_THROW(TMatrix<int> m(-5));
 }
 
-TEST(TVector, throws_when_create_vector_with_negative_startindex)
+TEST(TMatrix, can_create_copied_matrix)
 {
-  ASSERT_ANY_THROW(TVector<int> v(5, -2));
+	TMatrix<int> m(5);
+
+	ASSERT_NO_THROW(TMatrix<int> m1(m));
 }
 
-TEST(TVector, can_create_copied_vector)
+TEST(TMatrix, copied_matrix_is_equal_to_source_one)
 {
-  TVector<int> v(10);
-
-  ASSERT_NO_THROW(TVector<int> v1(v));
+	const int size = 5;
+	TMatrix<int> m1(size);
+	m1[0][0] = 3;
+	m1[0][1] = 4;
+	TMatrix<int> m2(m1);
+	cout << m1 << endl;
+	cout << m2 << endl;
+	bool res = (m1 == m2);
+	EXPECT_EQ(res, 1);
 }
 
-TEST(TVector, copied_vector_is_equal_to_source_one)
+TEST(TMatrix, copied_matrix_has_its_own_memory)
 {
-  ADD_FAILURE();
+	const int size = 10;
+	TMatrix<int> m1(size);
+	m1[0][0] = 3;
+	m1[0][1] = 4;
+	TMatrix<int> m2(m1);
+	m1[0][2] = 5;
+
+	EXPECT_NE(m1 == m2, 1);
 }
 
-TEST(TVector, copied_vector_has_its_own_memory)
+TEST(TMatrix, can_get_size)
 {
-  ADD_FAILURE();
+	const int size = 10;
+	TMatrix<int> m1(size);
+
+	EXPECT_EQ(10, m1.GetSize());
 }
 
-TEST(TVector, can_get_size)
+TEST(TMatrix, can_set_and_get_element)
 {
-  TVector<int> v(4);
-
-  EXPECT_EQ(4, v.GetSize());
+	const int size = 10;
+	TMatrix<int> m1(size);
+	m1[0][0] = 1;
+	EXPECT_EQ(1, m1[0][0]);
 }
 
-TEST(TVector, can_get_start_index)
+TEST(TMatrix, throws_when_set_element_with_negative_index)
 {
-  TVector<int> v(4, 2);
+	const int size = 10;
+	TMatrix<int> m1(size);
+	ASSERT_ANY_THROW(m1[0][-1] = 1);
 
-  EXPECT_EQ(2, v.GetStartIndex());
 }
 
-TEST(TVector, can_set_and_get_element)
+TEST(TMatrix, throws_when_set_element_with_too_large_index)
 {
-  TVector<int> v(4);
-  v[0] = 4;
-
-  EXPECT_EQ(4, v[0]);
+	const int size = 10;
+	TMatrix<int> m1(size);
+	ASSERT_ANY_THROW(m1[10][0]);
 }
 
-TEST(TVector, throws_when_set_element_with_negative_index)
+TEST(TMatrix, can_assign_matrix_to_itself)
 {
-  ADD_FAILURE();
+	TMatrix<int> m1(10);
+	ASSERT_NO_THROW(m1 = m1);
 }
 
-TEST(TVector, throws_when_set_element_with_too_large_index)
+TEST(TMatrix, can_assign_matrices_of_equal_size)
 {
-  ADD_FAILURE();
+	TMatrix<int> m1(10), m2(10);
+	m1[0][5] = 3;
+	m2 = m1;
+	EXPECT_EQ(m1, m2);
 }
 
-TEST(TVector, can_assign_vector_to_itself)
+TEST(TMatrix, assign_operator_change_matrix_size)
 {
-  ADD_FAILURE();
+	TMatrix<int> m1(10), m2(8);
+	m2 = m1;
+	EXPECT_EQ(10, m2.GetSize());
 }
 
-TEST(TVector, can_assign_vectors_of_equal_size)
+TEST(TMatrix, can_assign_matrices_of_different_size)
 {
-  ADD_FAILURE();
+	TMatrix<int> m1(10), m2(8);
+	ASSERT_NO_THROW(m2 = m1);
 }
 
-TEST(TVector, assign_operator_change_vector_size)
+TEST(TMatrix, compare_equal_matrices_return_true)
 {
-  ADD_FAILURE();
+	TMatrix<int> m1(5), m2(5);
+	m1[0][4] = 3;
+	m2[0][4] = 3;
+	EXPECT_EQ(m1, m2);
 }
 
-TEST(TVector, can_assign_vectors_of_different_size)
+TEST(TMatrix, compare_matrix_with_itself_return_true)
 {
-  ADD_FAILURE();
+	const int size = 10;
+	TMatrix<int> m1(size);
+	m1[0][0] = 3;
+	m1[0][1] = 4;
+	m1[0][2] = 5;
+	EXPECT_EQ(m1, m1);
 }
 
-TEST(TVector, compare_equal_vectors_return_true)
+TEST(TMatrix, matrices_with_different_size_are_not_equal)
 {
-  ADD_FAILURE();
+	TMatrix<int> m1(10), m2(8);
+	EXPECT_NE(m1, m2);
 }
 
-TEST(TVector, compare_vector_with_itself_return_true)
+TEST(TMatrix, can_add_matrices_with_equal_size)
 {
-  ADD_FAILURE();
+	TMatrix<int> m1(3), m2(3), test(3);
+	m1[0][0] = 5;
+	m1[1][1] = 4;
+	m1[2][2] = 3;
+	m2[0][0] = 1;
+	m2[1][1] = 2;
+	m2[2][2] = 3;
+	test[0][0] = 6;
+	test[1][1] = 6;
+	test[2][2] = 6;
+	EXPECT_EQ(m1 + m2, test);
 }
 
-TEST(TVector, vectors_with_different_size_are_not_equal)
+TEST(TMatrix, cant_add_matrices_with_not_equal_size)
 {
-  ADD_FAILURE();
+	TMatrix<int> m1(3), m2(2);
+	m1[0][0] = 5;
+	m1[1][1] = 4;
+	m1[2][2] = 6;
+	m2[0][0] = 1;
+	m2[1][1] = 2;
+	ASSERT_ANY_THROW(m1 + m2);
 }
 
-TEST(TVector, can_add_scalar_to_vector)
+TEST(TMatrix, can_subtract_matrices_with_equal_size)
 {
-  ADD_FAILURE();
+	TMatrix<int> m1(3), m2(3), test(3);
+	m1[0][0] = 5;
+	m1[1][1] = 4;
+	m1[2][2] = 3;
+	m2[0][0] = 1;
+	m2[1][1] = 2;
+	m2[2][2] = 3;
+	test[0][0] = 4;
+	test[1][1] = 2;
+	test[2][2] = 0;
+	EXPECT_EQ(m1 - m2, test);
 }
 
-TEST(TVector, can_subtract_scalar_from_vector)
+TEST(TMatrix, cant_subtract_matrixes_with_not_equal_size)
 {
-  ADD_FAILURE();
+	TMatrix<int> m1(3), m2(2);
+	m1[0][0] = 5;
+	m1[1][1] = 4;
+	m1[2][2] = 6;
+	m2[0][0] = 1;
+	m2[1][1] = 2;
+	ASSERT_ANY_THROW(m1 - m2);
 }
 
-TEST(TVector, can_multiply_scalar_by_vector)
+TEST(TMatrix, can_multiply_matrix_with_matrix)
 {
-  ADD_FAILURE();
+	TMatrix<int> m1(3), m2(3), res(3);
+	for (int i = 0; i < 3; i++)
+	{
+		m1[0][i] = i + 1;
+		m2[0][i] = i + 1;
+	}
+	m1[1][1] = 1;
+	m2[1][1] = 1;
+	m1[1][2] = 0;
+	m2[1][2] = 1;
+	m1[2][2] = 1;
+	m2[2][2] = 1;
+	res[0][0] = 1; res[0][1] = 4; res[0][2] = 8;
+	res[1][1] = 1; res[1][2] = 1; res[2][2] = 1;
+	ASSERT_EQ(m1 * m2, res);
 }
-
-TEST(TVector, can_add_vectors_with_equal_size)
-{
-  ADD_FAILURE();
-}
-
-TEST(TVector, cant_add_vectors_with_not_equal_size)
-{
-  ADD_FAILURE();
-}
-
-TEST(TVector, can_subtract_vectors_with_equal_size)
-{
-  ADD_FAILURE();
-}
-
-TEST(TVector, cant_subtract_vectors_with_not_equal_size)
-{
-  ADD_FAILURE();
-}
-
-TEST(TVector, can_multiply_vectors_with_equal_size)
-{
-  ADD_FAILURE();
-}
-
-TEST(TVector, cant_multiply_vectors_with_not_equal_size)
-{
-  ADD_FAILURE();
-}
-
